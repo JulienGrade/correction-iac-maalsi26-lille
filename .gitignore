@@ -1,0 +1,15 @@
+cat > .gitignore <<'EOF'
+.idea/
+.DS_Store
+.env
+.env.*
+!.env.example
+*.tfvars
+!*.tfvars.example
+*.tfvars.json
+.terraform/
+*.tfstate*
+*.tfplan
+kubeconfig*
+EOF
+
