@@ -18,7 +18,7 @@ jobs:
 
     steps:
       - name: Récupérer le dépôt
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Construire l'image identifiée par le commit
         run: docker build -t "websolutions-api:${GITHUB_SHA}" ./tp/02-infrastructure-as-code-websolutions/app
@@ -32,7 +32,7 @@ jobs:
         run: docker save "websolutions-api:${GITHUB_SHA}" | gzip > websolutions-image.tar.gz
 
       - name: Conserver l'artefact de livraison
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: websolutions-image-${{ github.sha }}
           path: websolutions-image.tar.gz
