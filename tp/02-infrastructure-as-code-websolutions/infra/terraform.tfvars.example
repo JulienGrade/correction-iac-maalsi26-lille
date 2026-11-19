@@ -1,0 +1,10 @@
+# Image construite dans le moteur Docker de la VM.
+api_image_id = "sha256:REMPLACER_PAR_L_IDENTIFIANT_DE_L_IMAGE"
+
+# Choisir une valeur locale ; ne pas publier le vrai mot de passe.
+db_password = "REMPLACER_PAR_UN_MOT_DE_PASSE_LOCAL"
+
+# À adapter si la VM ou le contexte Docker porte un autre nom.
+docker_context   = "websolutions-vm"
+web_bind_ip      = "192.168.56.20"
+nginx_config_dir = "/home/julien/websolutions/nginx-conf"

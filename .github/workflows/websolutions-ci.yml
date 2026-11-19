@@ -1,0 +1,40 @@
+name: WebSolutions - Tests et image
+
+on:
+  workflow_dispatch:
+    inputs:
+      fail_test:
+        description: "Faire échouer volontairement le test de version"
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  test-and-package:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le dépôt
+        uses: actions/checkout@v4
+
+      - name: Construire l'image identifiée par le commit
+        run: docker build -t "websolutions-api:${GITHUB_SHA}" ./tp/02-infrastructure-as-code-websolutions/app
+
+      - name: Exécuter les tests
+        env:
+          EXPECTED_VERSION: ${{ inputs.fail_test && 'version-incorrecte' || 'test-1.0.0' }}
+        run: docker run --rm -e EXPECTED_VERSION "websolutions-api:${GITHUB_SHA}" npm test
+
+      - name: Préparer l'image à livrer
+        run: docker save "websolutions-api:${GITHUB_SHA}" | gzip > websolutions-image.tar.gz
+
+      - name: Conserver l'artefact de livraison
+        uses: actions/upload-artifact@v4
+        with:
+          name: websolutions-image-${{ github.sha }}
+          path: websolutions-image.tar.gz
+          if-no-files-found: error
+          retention-days: 7

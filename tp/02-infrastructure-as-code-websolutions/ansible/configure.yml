@@ -1,0 +1,45 @@
+---
+- name: Configurer la cible WebSolutions
+  hosts: websolutions_test
+  become: true
+
+  tasks:
+    - name: Vérifier que Docker Engine est installé
+      ansible.builtin.apt:
+        name: docker-ce
+        state: present
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Maintenir le service Docker actif
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Préparer le dossier de configuration Nginx
+      ansible.builtin.file:
+        path: /home/julien/websolutions/nginx-conf
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Installer la configuration du serveur web
+      ansible.builtin.copy:
+        src: files/websolutions.conf
+        dest: /home/julien/websolutions/nginx-conf/default.conf
+        owner: root
+        group: root
+        mode: "0644"
+      notify: Configuration Nginx modifiée
+
+  handlers:
+    - name: Vérifier la syntaxe Nginx
+      ansible.builtin.command: docker exec websolutions-web nginx -t
+      changed_when: false
+      listen: Configuration Nginx modifiée
+
+    - name: Recharger Nginx
+      ansible.builtin.command: docker exec websolutions-web nginx -s reload
+      listen: Configuration Nginx modifiée
